@@ -1,0 +1,11 @@
+# 使用するライブラリをここに列挙してください。
+
+
+# 以下はサンプルです。
+pypdf
+unstructured
+openai
+supabase
+fastapi
+uvicorn
+ 

@@ -1,0 +1,42 @@
+# --- Python 基本設定 ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 仮想環境（venv）
+venv/
+env/
+.venv/
+
+# IDE / エディタ関連
+.vscode/
+.idea/
+*.swp
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Mac の自動生成ファイル
+.DS_Store
+
+# ログ、キャッシュ
+*.log
+.cache/
+
+# 環境変数ファイル（APIキーなど）
+.env
+.env.local
+.env.production
+.env.development
+
+# Python パッケージ生成関連
+build/
+dist/
+*.egg-info/
+
+# OS依存ファイル
+Thumbs.db
+
+# アップロードファイル
+documents/

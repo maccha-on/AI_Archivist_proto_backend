@@ -1,0 +1,56 @@
+# 概要
+PDFを分類するための試作アプリです。もふもふ。
+
+# 実行方法
+適当な PDF をdocumentsフォルダに置いて実行してください。
+例: `python main.py ./documents/sample.pdf`
+
+# 構成
+project_root/
+│
+├── main.py # オーケストレーター（処理の流れの司令塔）
+│
+├── core_types.py # データ型（DocumentMeta / Chunkなど）
+│
+├── backend_extractor.py # PDFを抽出するモジュール（ダミー版）
+├── backend_embedder.py # ベクトルを生成するモジュール（ダミー版）
+└── backend_persistence.py # DBに保存するモジュール（ダミー版）
+
+# 🧠 各ファイルの役割
+
+### ✨ main.py（オーケストレーター）
+- プロジェクト全体の流れを管理する「司令塔」
+- Extract → Embed → Save の順に処理を進める
+- どの処理がどこで行われるかがここを見れば分かる
+
+---
+
+### 📄 core_types.py（データ型の定義）
+- 文書やチャンクなどの「データ構造」を一か所にまとめたもの
+- チーム全員が同じ構造を使うための“共通の言語”
+
+---
+
+### 🔍 backend_extractor.py（抽出：ダミー版）
+- 通常は PDF を読み取ってテキストを抽出する
+- MVPでは “ダミーの文書情報とチャンク” を返すだけ
+
+---
+
+### 🧮 backend_embedder.py（ベクトル化：ダミー版）
+- 本来は OpenAI API などで embedding を作成する
+- ダミー版では **ランダムな数値のリスト** を生成するだけ
+
+---
+
+### 📦 backend_persistence.py（保存：ダミー版）
+- 本来は DB（PostgreSQL / Supabase）に保存する部分
+- ダミー版では **printで表示するだけ**
+- MVPの開発ではこれで十分
+
+---
+
+# 🚀 セットアップ方法（初心者向け）
+
+## 1. Python がインストールされていることを確認
+以下のコマンドを実行：
