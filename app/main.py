@@ -19,18 +19,19 @@ import sys                         # コマンドライン引数（python main.p
 from pathlib import Path            # ファイルの存在確認や名前取得を簡単にするための標準ライブラリ
 
 # core_types.py に定義してある、処理結果をまとめるためのクラス
-from core_types import DocumentProcessResult
+from app.core_types import DocumentProcessResult
 
 
 # 3つのバックエンド（A：抽出、B：ベクトル化、C：保存）を import
 # ※ これらの関数の中身は後で実装します。
 from backend_extractor import extract_from_pdf
-from backend_embedder import embed_chunks
-from backend_persistence import (
+from embedder import embed_chunks
+from app.persistence_rdb import (
     create_document_record,
-    save_document_chunks,
     update_document_status,
 )
+from app.persistence_vectordb import save_document_chunks
+
 
 def process_pdf(file_path: str, storage_path: str) -> DocumentProcessResult:
     """
