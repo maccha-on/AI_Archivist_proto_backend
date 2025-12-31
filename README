@@ -1,3 +1,28 @@
+## ============== README ==============
+## 現在、テスト版です。
+## PDFファイルを事前に置いた状態で起動して、質問を投げる仕様です。
+
+
+# ====== 事前準備 ======
+# 1) test/import_documents フォルダに適当な PDF を配置してください。
+# 2) .envに api keyを設定してください。
+
+
+# ====== サンプルの動かし方 ======
+# python sample_***.py
+
+
+# ====== main.pyの動かし方 ======
+# 1. pip install -r requirements.txt
+# 2. uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+
+
+
+
+# --------------------------------------
+# 本番用READMEの下書き
+# --------------------------------------
 # 概要
 PDFを分類するための試作アプリです。もふもふ。
 
@@ -15,6 +40,18 @@ project_root/
 ├── backend_extractor.py # PDFを抽出するモジュール（ダミー版）
 ├── backend_embedder.py # ベクトルを生成するモジュール（ダミー版）
 └── backend_persistence.py # DBに保存するモジュール（ダミー版）
+
+
+extract_service（PDF→テキスト）
+
+chunk_service（テキスト分割）
+
+embed_service（Embedding生成）
+
+classify_service（分類/タグ付け）
+
+search_service（ベクトル検索 + 再ランキング + 要約）
+
 
 # 🧠 各ファイルの役割
 
