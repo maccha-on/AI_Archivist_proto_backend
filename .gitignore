@@ -12,23 +12,16 @@ env/
 # IDE / エディタ関連
 .vscode/
 .idea/
-*.swp
-
-# Jupyter Notebook
-.ipynb_checkpoints/
 
 # Mac の自動生成ファイル
 .DS_Store
 
 # ログ、キャッシュ
 *.log
-.cache/
 
 # 環境変数ファイル（APIキーなど）
 .env
 .env.local
-.env.production
-.env.development
 
 # Python パッケージ生成関連
 build/
@@ -40,3 +33,12 @@ Thumbs.db
 
 # アップロードファイル
 documents/
+*.PDF
+*.pdf
+
+# 生成データの保存場所（最重要）
+data/
+!data/.gitkeep
+
+# バックアップ用フォルダ 無視してください。
+app/old_pyfile/
