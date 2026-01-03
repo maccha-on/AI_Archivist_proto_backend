@@ -8,7 +8,7 @@ FAISSのインデックス管理を行うモジュール
 """
 
 import faiss
-from analyzer.embedder import get_embedding
+from app.analyzer.embedder import get_embedding
 
 # ----------------------------------------
 # 1. FAISSインデックスの初期化

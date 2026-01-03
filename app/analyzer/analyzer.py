@@ -4,10 +4,10 @@ PDFフォルダ内のファイルを読み込み、
 """
 
 import os
-from analyzer.file_loader import load_pdf
-from analyzer.text_splitter import split_text_with_overlap
-from analyzer.embedder import get_embedding
-from analyzer.index_manager import add_vector, index
+from app.analyzer.file_loader import load_pdf
+from app.analyzer.text_splitter import split_text_with_overlap
+from app.analyzer.embedder import get_embedding
+from app.analyzer.index_manager import add_vector, index
 
 
 def analyze_files(dir: str):
