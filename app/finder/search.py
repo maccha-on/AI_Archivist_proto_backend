@@ -3,8 +3,8 @@ Embeddingを使ってFAISSから類似文章を検索するモジュール
 """
 
 import faiss
-from analyzer.embedder import get_embedding
-from analyzer.index_manager import index, meta_data
+from app.analyzer.embedder import get_embedding
+from app.analyzer.index_manager import index, meta_data
 
 
 def search_chunks(query: str, top_k: int = 3) -> list[dict]:

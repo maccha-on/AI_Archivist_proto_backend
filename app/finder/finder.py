@@ -2,8 +2,8 @@
 検索とRAGをまとめた窓口モジュール
 """
 
-from finder.search import search_chunks
-from finder.rag import build_rag_prompt, generate_answer
+from app.finder.search import search_chunks
+from app.finder.rag import build_rag_prompt, generate_answer
 
 
 def answer_query(question: str, top_k: int = 3) -> dict:

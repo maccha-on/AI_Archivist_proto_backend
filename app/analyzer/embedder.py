@@ -1,7 +1,4 @@
-import os
 import numpy as np
-from dotenv import load_dotenv
-from google import genai
 from app.core.clients import get_gemini_client
 
 
