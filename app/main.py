@@ -6,33 +6,44 @@ main.py
 
 """
 
-import requests, json
-import sys                          # コマンドライン引数（python main.py sample.pdf）を扱うため
-
-from fastapi import FastAPI, Query
-from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
-from pathlib import Path            # ファイルの存在確認や名前取得を簡単にするための標準ライブラリ
 from __future__ import annotations  # 型ヒントをシンプルに書けるようにするための 魔法 のようなもの
 
-from analyzer.analyzer import analyze_files
-from finder.finder import answer_query
+import os
+
+from fastapi import FastAPI, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
+from dotenv import load_dotenv
+from google import genai
+from openai import OpenAI
+
+from app.analyzer.analyzer import analyze_files
+from app.finder.finder import answer_query
+
+# ================== サブモジュール ==================
+# 分析処理が、API起動時のみ走るように指示
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    analyze_files("./test/import_documents")  # 起動時にPDFを読み込んで分析を実行
+    yield  # ← FastAPI がリクエスト受付を開始するポイント
 
 
-# メイン実行処理
-load_dotenv()
-app = FastAPI(title="MOF2 Prototype API")
-analyze_files("./test/import_documents")  # 起動時にPDFを読み込んで分析を実行
+
+# ==================== メイン処理 ====================
+ # FastAPI起動
+app = FastAPI(title="MOF2 Prototype API", lifespan=lifespan)
 
 # CORSミドルウェアの設定
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 
+
+# ================== APIサービス定義 ==================
 # トップページの表示
 @app.get("/")
 def index():
@@ -44,14 +55,17 @@ def health():
     return {"status": "ok"}
 
 # ファイル問合せ用エンドポイント
+# 使用例 http://localhost:8000/ask?q=質問文
+# askはURLログに残りやすいため本来はPOSTメソッド化が推奨される(未対応)
 @app.get("/ask")
 def ask(q: str = Query(..., description="質問文")):
-    """
-    GET /ask?q=適用範囲を教えてください
-    のように質問を受け取って回答する。
-    """
-    result = answer_query(q)
-    print("\n=== 参照チャンク ===")
-    for c in result["contexts"]:
-        print(f"page {c['page']}: {c['text'][:80]}...")
-    return result
+    if not q or not q.strip():
+        raise HTTPException(status_code=400, detail="404 No query message.")
+
+    try:
+        result = answer_query(q)
+        return result
+ 
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
