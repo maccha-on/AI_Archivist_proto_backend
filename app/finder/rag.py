@@ -4,18 +4,7 @@ RAG用のプロンプト作成と回答生成を行うモジュール
 
 import os
 from openai import OpenAI
-from dotenv import load_dotenv
-
-# 環境変数の読み込み
-load_dotenv()
-
-# APIキー取得
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-if not OPENAI_API_KEY:
-    raise RuntimeError("OPENAI_API_KEY is not set")
-
-# OpenAIクライアント初期化
-client = OpenAI(api_key=OPENAI_API_KEY)
+from app.core.clients import get_gemini_client, get_openai_client
 
 
 def build_rag_prompt(question: str, contexts: list[dict]) -> str:
@@ -26,8 +15,8 @@ def build_rag_prompt(question: str, contexts: list[dict]) -> str:
     )
 
     # RAG用プロンプト
+    # 2026/1/3修正: 役割の記載が2重になっていたため削除
     return f"""
-あなたは社内規定に詳しいアシスタントです。
 以下の資料を参考に質問に答えてください。
 
 ### 資料
@@ -40,6 +29,10 @@ def build_rag_prompt(question: str, contexts: list[dict]) -> str:
 
 def generate_answer(prompt: str) -> str:
     # GPTで回答生成
+    # client = get_openai_client()
+    # => 2026/1/3修正: クライアント呼び出しはcore/clients.pyに集約しています。
+    #    もし新規にクライアントを生成する必要があれば修正してください。
+    client = get_openai_client()
     response = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[

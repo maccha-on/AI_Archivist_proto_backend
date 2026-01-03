@@ -21,31 +21,34 @@ def analyze_files(dir: str):
     # 各PDFを処理
     for pdf_path in pdf_paths:
         doc_id = os.path.basename(pdf_path).split(".")[0]
+        try:
+            # PDF → ページ単位で読み込み
+            pages = load_pdf(pdf_path)
 
-        # PDF → ページ単位で読み込み
-        pages = load_pdf(pdf_path)
+            for page in pages:
+                # ページ文章をチャンク分割
+                chunks = split_text_with_overlap(page["text"])
 
-        for page in pages:
-            # ページ文章をチャンク分割
-            chunks = split_text_with_overlap(page["text"])
+                for i, chunk in enumerate(chunks):
+                    # チャンクをEmbedding
+                    embedding = get_embedding(chunk)
 
-            for i, chunk in enumerate(chunks):
-                # チャンクをEmbedding
-                embedding = get_embedding(chunk)
+                    # FAISSへ登録
+                    add_vector(
+                        embedding,
+                        {
+                            "doc_id": doc_id,
+                            "page": page["page"],
+                            "chunk_id": i,
+                            "text": chunk,
+                        },
+                    )
+        except Exception as e:
+            print(f"[ERROR] PDFの処理に失敗しました: {pdf_path} エラー: {e}")
 
-                # FAISSへ登録
-                add_vector(
-                    embedding,
-                    {
-                        "doc_id": doc_id,
-                        "page": page["page"],
-                        "chunk_id": i,
-                        "text": chunk,
-                    },
-                )
+        # 登録結果を表示
+        print(f"FAISS登録済みベクトル数: {index.ntotal}")
 
-    # 登録結果を表示
-    print(f"FAISS登録済みベクトル数: {index.ntotal}")
 
 
 
