@@ -15,10 +15,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 
-from app.analyzer.analyzer import analyze_files
-from app.finder.finder import answer_query
 
-# ================== サブモジュール ==================
+# ==================== 関数定義 =======================
+
 # 分析処理が、API起動時のみ走るように指示
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -27,9 +26,12 @@ async def lifespan(app: FastAPI):
 
 
 
-# ==================== メイン処理 ====================
-# 環境変数の読み込み
-load_dotenv()
+# ==================== メイン処理 ======================
+
+# 環境変数を読み込んでから各モジュールをインポート
+load_dotenv(override=False)
+from app.analyzer.analyzer import analyze_files
+from app.finder.finder import answer_query
 
  # FastAPI起動
 app = FastAPI(title="MOF2 Prototype API", lifespan=lifespan)
@@ -45,6 +47,7 @@ app.add_middleware(
 
 
 # ================== APIサービス定義 ==================
+
 # トップページの表示
 @app.get("/")
 def index():

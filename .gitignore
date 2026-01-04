@@ -22,6 +22,7 @@ env/
 # 環境変数ファイル（APIキーなど）
 .env
 .env.local
+*.pem
 
 # Python パッケージ生成関連
 build/

@@ -11,7 +11,6 @@ _openai_client = None
 
 def get_gemini_client():
     global _gemini_client
-    load_dotenv()
     if _gemini_client is None:
         _gemini_client = genai.Client()
     return _gemini_client
