@@ -1,0 +1,31 @@
+Field,Type,Description
+id,int,文書を一意に識別するローカルID。PoCでは連番採番。
+original_filename,string,アップロード時の元ファイル名。ユーザー表示・履歴追跡用。
+local_path,string,ローカル保存先パス。将来Blob URIに置換可能。
+os_modified_date,datetime(ISO8601),OS上での最終更新日時。版推定や差分検知に使用。
+mime_type,string,ファイル実体から判定したMIMEタイプ。解析分岐やOCR判断に使用。
+is_latest,bool,同一family_key内で最新版かどうかを示すフラグ。
+status,enum,文書処理状態。processing / completed / failed を想定。
+sha256,string,ファイル内容のハッシュ値。重複登録防止・同一性確認に使用。
+doc_summary,string,文書全体の要約。
+version_label,string,"v1, rev2などの版情報。人間向け補助情報。"
+family_key,string,同一シリーズ文書を束ねる内部識別子。最新版管理に使用。
+access_counter,int,検索結果から参照された回数。ランキング補正に利用可能。
+pages,int,PDFの総ページ数。文書ボリュームの把握に使用。
+estimated_timestamp,datetime(ISO8601),推定された文書の作成日または更新日。
+estimated_author,string,推定された作成者（個人・部署・組織）。
+content_summary,string,文書全体の要約。検索結果の説明表示に使用。
+content_type,enum,technical / business / rules / contract / minute / email / memo / misc
+ai_tags_json,array(string),AIにより推定されたタグ群。検索・フィルタ補助。
+created_company,string,文書の作成会社。検索条件として有効。
+department,string,関連部署。業務文脈検索に使用。
+project_name,string,関連プロジェクト名。
+content_formality_level,float(0-1),文体のフォーマル度。規程・契約書ほど高い。
+approval_position_level,float(0-1),承認者の役職レベルの高さ。
+security_level,enum,public / internal / confidential / secret
+jargon_level,float(0-1),専門用語・社内用語の多さ。
+public_moral_level,float(0-1),公序良俗への適合度。
+financial_scale,int(JPY),金銭の移動規模（売上・支払額ベース、円）。
+content_entropy,float(0-1),内容の多様性・分野の広がり。
+text_density,int,1ページあたりの平均文字数。
+technical_level,float(0-1),技術仕様書・専門技術文書度合い。
