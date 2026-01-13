@@ -1,61 +1,70 @@
-'''
+"""
 app.db.connect_MySQL
 
-「アプリ全体で共有する DB エンジンを、1回だけ作るモジュール」
+アプリ全体で共有する DB エンジンを、1回だけ作るモジュール。
+import時に実行される（副作用あり）ので、ここは最小限＆安全に。
+"""
 
-engineを一度だけ定義するためのもの 共有リソース定義モジュールのため、
-ベタ打ちの内容が、import時に実行されます。
-DB_NAME_DOCUMENTS と DB_NAME_CHUNKS の2つのDBに接続するエンジンを作成します。
+from __future__ import annotations
 
-'''
-
-
+import os
+import tempfile
 from sqlalchemy import create_engine
-import os, tempfile
 
-# データベース接続情報
-DB_USER = os.getenv('DB_USER')
-DB_PASSWORD = os.getenv('DB_PASSWORD')
-DB_HOST = os.getenv('DB_HOST')
-DB_PORT = os.getenv('DB_PORT')
-DB_NAME_DOCUMENTS = os.getenv('DB_NAME_DOCUMENTS')
-DB_NAME_CHUNKS = os.getenv('DB_NAME_CHUNKS')
 
-# ローカル実行用：CA証明書ファイルのパス（.env想定）
-SSL_CA_PATH = os.getenv('SSL_CA_PATH')
+def _require_env(name: str) -> str:
+    v = os.getenv(name)
+    if not v:
+        raise RuntimeError(f"Missing env var: {name}")
+    return v
 
-# MySQLのURL構築
-DATABASE_URL_DOCUMENTS = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME_DOCUMENTS}"
-DATABASE_URL_CHUNKS = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME_CHUNKS}"
 
-# ローカル実行時用の処理 SSL証明書ファイルのパスを絶対パスに変換
-# current_dir = os.path.dirname(os.path.abspath(__file__))
-# backend_dir = os.path.dirname(current_dir)  # db_controlの親ディレクトリ（backend）
-# cert_path = os.path.join(backend_dir, "DigiCertGlobalRootG2.crt.pem")
- 
-# Azure用:
-# PEMを環境変数から読み取り、クラウド側でtmpファイルに保存しパスを返す関数
+# --- 必須：DB接続情報 ---
+DB_USER = _require_env("DB_USER")
+DB_PASSWORD = _require_env("DB_PASSWORD")
+DB_HOST = _require_env("DB_HOST")
+DB_PORT = _require_env("DB_PORT")
+DB_NAME_DOCUMENTS = _require_env("DB_NAME_DOCUMENTS")
+DB_NAME_CHUNKS = _require_env("DB_NAME_CHUNKS")
+
+# --- 任意：ローカル実行用 CA パス ---
+SSL_CA_PATH = os.getenv("SSL_CA_PATH")
+
+# --- Azure用：CA本文（PEM）を環境変数から受け取りtmpに保存 ---
 def prepare_ca_file_from_env() -> str | None:
-    pem = os.getenv("PEM_CONTENT")  # CA証明書本文/ Azure実行時用
+    pem = os.getenv("PEM_CONTENT")
     if not pem:
         return None
-    pem = pem.replace("\\n", "\n")   # \n文字列を改行に置き替え
+    pem = pem.replace("\\n", "\n")
     ca_path = os.path.join(tempfile.gettempdir(), "mysql-ca.pem")
-    with open(ca_path, "w") as f:
+    with open(ca_path, "w", encoding="utf-8") as f:
         f.write(pem)
     return ca_path
 
-ca_path = prepare_ca_file_from_env() or SSL_CA_PATH
 
+ca_path = prepare_ca_file_from_env() or SSL_CA_PATH
 
 connect_args = {}
 if ca_path:
+    # PoC向け。可能なら本番は check_hostname=True を推奨
     connect_args = {"ssl": {"ca": ca_path, "check_hostname": False}}
 
-# エンジンの作成
+# echoは環境変数で切替（PoCではtrueが便利）
+ECHO = os.getenv("DB_ECHO", "false").lower() == "true"
+
+# charsetは明示しておく（日本語/記号で詰まらないため）
+DATABASE_URL_DOCUMENTS = (
+    f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME_DOCUMENTS}"
+    f"?charset=utf8mb4"
+)
+DATABASE_URL_CHUNKS = (
+    f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME_CHUNKS}"
+    f"?charset=utf8mb4"
+)
+
 engine_documents = create_engine(
     DATABASE_URL_DOCUMENTS,
-    echo=True,
+    echo=ECHO,
     pool_pre_ping=True,
     pool_recycle=3600,
     connect_args=connect_args,
@@ -63,11 +72,8 @@ engine_documents = create_engine(
 
 engine_chunks = create_engine(
     DATABASE_URL_CHUNKS,
-    echo=True,
+    echo=ECHO,
     pool_pre_ping=True,
     pool_recycle=3600,
     connect_args=connect_args,
 )
-
-
-
