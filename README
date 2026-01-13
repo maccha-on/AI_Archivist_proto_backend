@@ -6,8 +6,10 @@
  ============ 事前準備 ================
   1) test/import_documents フォルダに適当な PDF を配置してください。
   2) .envに api keyを設定してください。
-
-
+  3) DB未作成の場合のみ:
+        DB作成用のコマンドを実行してください。
+        python -m app.db.create_tables （MySQLで動かす場合）
+        python -m app.db.init_store （JSONで動かす場合）
  ========= サンプルの動かし方 ==========
   python sample_***.py
 
